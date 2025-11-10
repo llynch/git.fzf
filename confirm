@@ -1,0 +1,12 @@
+#!/bin/bash
+
+HEADER=${1:-Are you sure?}
+
+response=$(echo -e 'No\nYes' | fzf --header "$HEADER") 
+if [ "$response" == "Yes" ]; then
+  echo "Confirmed: $HEADER"
+  exit 0
+else
+  echo "Aborting: $HEADER"
+  exit 1
+fi

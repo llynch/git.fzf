@@ -1,0 +1,20 @@
+#!/bin/bash
+
+DIR="$(dirname $0)"
+
+export CONFIRM_COMMAND="$DIR/confirm"
+export GIT_LOG_FZF_COMMAND="$DIR/git-log"
+export GIT_LOG_COMMAND="git log --color -30 --graph --pretty=format:'%C(yellow)%h %C(auto,blue)%>(10,trunc)%ad %C(green)%<(7)%aN%C(auto)%d %Creset%s' --date=short"
+export FZF_DEFAULT_COMMAND="git branch --color -a | sed 's/[\* ]*//'"
+fzf \
+    --multi \
+    --query "!remotes " \
+    --ansi \
+    --preview "$GIT_LOG_COMMAND {}" \
+    --preview-window=up \
+    --header="Git branches - ctrl+<key> - (c)heckout, (t)rack, (d)elete local, (x)elete remote, ctrl+u:clear-query" \
+    --bind "enter:become(git checkout {})" \
+    --bind "ctrl-t:become(git checkout --track {})" \
+    --bind "ctrl-d:execute(sh -c 'git branch -d {}')+reload($FZF_DEFAULT_COMMAND)" \
+    --bind "ctrl-x:execute($CONFIRM_COMMAND '⚠️ DELETE PERMANENTLY: {}' && echo {} | sed 's/remotes\/origin\///' | xargs -iX git push origin :X)+reload($FZF_DEFAULT_COMMAND)" \
+    --bind "ctrl-l:become($GIT_LOG_FZF_COMMAND {})"
