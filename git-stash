@@ -1,0 +1,18 @@
+#!/bin/bash
+
+DIR="$(dirname $0)"
+
+export GIT_STASH_LIST_COMMAND="git stash list --color --pretty=format:'%C(yellow)%gd %C(auto,blue)%>(10,trunc)%ad %C(green)%<(7)%aN%C(auto)%d %Creset%s' --date=short"
+export CONFIRM_COMMAND="gum confirm"
+export FIRST_FIELD_COMMAND="echo {} | cut -f1 -d ' '"
+export PREVIEW_COMMAND="$FIRST_FIELD_COMMAND | xargs -IX git stash show --color -p X"
+export FZF_DEFAULT_COMMAND="$GIT_STASH_LIST_COMMAND"
+fzf \
+    --ansi \
+    --preview "$PREVIEW_COMMAND" \
+    --preview-window="up,80%" \
+    --header="Git branches - ctrl+<key> - (p)pop, (a)apply, (x)delete, ctrl+u:clear-query" \
+    --bind "enter:become($PREVIEW_COMMAND)" \
+    --bind "ctrl-a:become($FIRST_FIELD_COMMAND | xargs -IX git stash apply X)" \
+    --bind "ctrl-p:become($FIRST_FIELD_COMMAND | xargs -IX git stash pop X)" \
+    --bind "ctrl-x:execute($CONFIRM_COMMAND '⚠️ DELETE PERMANENTLY' && $FIRST_FIELD_COMMAND | xargs -IX git stash drop X)+reload($FZF_DEFAULT_COMMAND)"
