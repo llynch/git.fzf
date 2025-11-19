@@ -2,7 +2,7 @@
 
 DIR="$(dirname $0)"
 
-export GIT_DIFF_COMMAND="sed -n 's/.*\* *\([0-9a-f]\{7\}\) .*/\1/p' | xargs -IX git log --color -1 -p X"
+export GIT_DIFF_COMMAND="sed -n 's/.*[\* ]*\([0-9a-f]\{7\}\) .*/\1/p' | xargs -IX git log --color -1 -p X"
 export GIT_LOG_COMMAND="git log --color -30 --graph --pretty=format:'%C(yellow)%h %C(auto,blue)%>(10,trunc)%ad %C(green)%<(7)%aN%C(auto)%d %Creset%s' --date=short"
 export FZF_DEFAULT_COMMAND="$GIT_LOG_COMMAND $1"
 fzf \
